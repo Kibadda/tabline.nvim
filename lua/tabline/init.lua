@@ -37,7 +37,7 @@ function M.setup(opts)
     M.highlights = opts.highlights
     M.set_highlights()
 
-    vim.wo.tabline = [[%!luaeval('require("tabline").render_tabline()')]]
+    vim.opt.tabline = [[%!luaeval('require("tabline").render_tabline()')]]
   end
 end
 
