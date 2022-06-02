@@ -1,15 +1,15 @@
 local M = {}
 
 function M.get_buffers()
-  local buffer_numbers = vim.api.nvim_list_buf()
+  local buffer_numbers = vim.api.nvim_list_bufs()
   local current_buffer = vim.api.nvim_get_current_buf()
 
   local buffers = {}
   for _, number in ipairs(buffer_numbers) do
-    if vim.fn.buflisted(number) then
+    if vim.fn.buflisted(number) == 1 then
       local filepath = vim.fn.expand("#" .. number)
 
-      if string.find(filepath, "^term://") == nil then
+      if string.find(filepath, "^term:/") == nil then
         local shorten_filepath = M.shorten_filepath(filepath)
         local base_string_length = 3 + string.len(number)
         local string_length = base_string_length + string.len(filepath)
@@ -34,6 +34,8 @@ function M.get_buffers()
       end
     end
   end
+
+  return buffers
 end
 
 function M.get_current_index(buffers)
@@ -44,16 +46,16 @@ function M.get_current_index(buffers)
   end
 end
 
-function M.get_buffer_string(buffer, opts)
+function M.get_buffer_string(buffer, highlights)
   local highlight
   if buffer.current then
-    highlight = "%#" .. opts.highlights.selected.name .. "#"
+    highlight = "%#" .. highlights.selected.name .. "#"
   else
-    highlight = "%#" .. opts.highlights.other.name .. "#"
+    highlight = "%#" .. highlights.other.name .. "#"
   end
 
   local filepath
-  if vim.g.tabline_shorten_filepath then
+  if buffer.current or vim.g.tabline_shorten_filepath then
     filepath = buffer.filepath
   else
     filepath = buffer.shorten_filepath
@@ -67,7 +69,7 @@ function M.get_buffer_string(buffer, opts)
   return highlight .. "[" .. buffer.number .. ":" .. filepath .. modified .. "]"
 end
 
-function M.add_buffer_on_left(buffer, opts)
+function M.add_buffer_on_left(buffer, highlights, tabline_string_length, tabline_max_length)
   local string_length
   if vim.g.tabline_shorten_filepath then
     string_length = buffer.shorten_string_length
@@ -75,9 +77,11 @@ function M.add_buffer_on_left(buffer, opts)
     string_length = buffer.string_length
   end
 
-  if TabLineStringLength + string_length < TabLineMaxLength then
-    TabLineString = M.get_buffer_string(buffer, opts) .. "%#" .. opts.highlights.fill.name .. "# " .. TabLineString
-    TabLineStringLength = TabLineStringLength + string_length
+  if tabline_string_length + string_length < tabline_max_length then
+    return {
+      string = M.get_buffer_string(buffer, highlights) .. "%#" .. highlights.fill.name .. "# ",
+      length = string_length,
+    }
   else
     -- TODO: handle "<<<"
     return {
@@ -87,7 +91,7 @@ function M.add_buffer_on_left(buffer, opts)
   end
 end
 
-function M.add_buffer_on_right(buffer, opts)
+function M.add_buffer_on_right(buffer, highlights, tabline_string_length, tabline_max_length)
   local string_length
   if vim.g.tabline_shorten_filepath then
     string_length = buffer.shorten_string_length
@@ -95,11 +99,17 @@ function M.add_buffer_on_right(buffer, opts)
     string_length = buffer.string_length
   end
 
-  if TabLineStringLength + string_length < TabLineMaxLength then
-    TabLineString = TabLineString .. "%#" .. opts.highlights.fill.name .. "# " .. M.get_buffer_string(buffer, opts)
-    TabLineStringLength = TabLineStringLength + string_length
+  if tabline_string_length + string_length < tabline_max_length then
+    return {
+      string = "%#" .. highlights.fill.name .. "# " .. M.get_buffer_string(buffer, highlights),
+      length = string_length,
+    }
   else
     -- TODO: handle ">>>"
+    return {
+      string = "",
+      length = 0,
+    }
   end
 end
 
