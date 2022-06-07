@@ -8,6 +8,9 @@ function M.get_buffers()
   for _, number in ipairs(buffer_numbers) do
     if vim.fn.buflisted(number) == 1 then
       local filepath = vim.fn.expand("#" .. number)
+      if filepath == "" then
+        filepath = "NO NAME"
+      end
 
       if string.find(filepath, "^term:/") == nil then
         local shorten_filepath = M.shorten_filepath(filepath)
