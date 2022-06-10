@@ -14,6 +14,7 @@ function M.get_buffers()
 
       if string.find(filepath, "^term:/") == nil then
         local shorten_filepath = M.shorten_filepath(filepath)
+        -- 3: "[" ":" "]"
         local base_string_length = 3 + string.len(number)
         local string_length = base_string_length + string.len(filepath)
         local shorten_string_length = base_string_length + string.len(shorten_filepath)
@@ -58,7 +59,7 @@ function M.get_buffer_string(buffer, highlights)
   end
 
   local filepath
-  if buffer.current or vim.g.tabline_shorten_filepath then
+  if buffer.current or not vim.g.tabline_shorten_filepath then
     filepath = buffer.filepath
   else
     filepath = buffer.shorten_filepath

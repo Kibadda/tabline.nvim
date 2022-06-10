@@ -6,7 +6,7 @@ function M.setup(opts)
   opts = opts or {}
   opts = vim.tbl_deep_extend("keep", opts, {
     enable = true,
-    shorten = false,
+    shorten = true,
     keymap = "<LEADER>tt",
     highlights = {
       selected = {
