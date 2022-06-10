@@ -6,7 +6,7 @@ function M.setup(opts)
   opts = opts or {}
   opts = vim.tbl_deep_extend("keep", opts, {
     enable = true,
-    shorten = true,
+    bufname = "filename", -- "filename", "filepath", "short_filepath"
     keymap = "<LEADER>tt",
     highlights = {
       selected = {
@@ -27,8 +27,12 @@ function M.setup(opts)
     },
   })
 
+  if opts.bufname ~= "filename" and opts.bufname ~= "filepath" and opts.bufname ~= "short_filepath" then
+    opts.bufname = "filename"
+  end
+
   if opts.enable then
-    vim.g.tabline_shorten_filepath = opts.shorten
+    vim.g.tabline_bufname = opts.bufname
 
     if opts.keymap ~= nil then
       M.set_keymap(opts.keymap)
@@ -94,11 +98,17 @@ function M.render_tabline()
 end
 
 function M.set_keymap(lhs)
-  vim.keymap.set("n", lhs, M.toggle_shorten_filepath, { desc = "[Tabline] toggle shorten" })
+  vim.keymap.set("n", lhs, M.cycle_bufname, { desc = "[Tabline] toggle shorten" })
 end
 
-function M.toggle_shorten_filepath()
-  vim.g.tabline_shorten_filepath = not vim.g.tabline_shorten_filepath
+function M.cycle_bufname()
+  if vim.g.tabline_bufname == "filename" then
+    vim.g.tabline_bufname = "filepath"
+  elseif vim.g.tabline_bufname == "filepath" then
+    vim.g.tabline_bufname = "short_filepath"
+  elseif vim.g.tabline_bufname == "short_filepath" then
+    vim.g.tabline_bufname = "filename"
+  end
   vim.cmd [[redrawtabline]]
 end
 

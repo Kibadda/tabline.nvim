@@ -20,7 +20,7 @@ These are the default options: (which can be overwritten individually)
 ```lua
 local opts = {
   enable = true,
-  shorten = false,
+  bufname = "filename",
   keymap = "<LEADER>tt",
   highlights = {
     selected = {
@@ -45,15 +45,18 @@ local opts = {
 #### Enable
 Setting this to `false` disables this whole plugin.
 
-#### Shorten
-Setting this to `true` shortens filepaths.
+#### Bufname
+Name for buffer. Options:
+ - `"filename"`: display only the filename
+ - `"filepath"`: display filename with filepath in cwd
+ - `"short_filepath"`: display filename with shortened filepath in cwd
 
 #### Keymap
-Left hand side for the keymap to toggle `shorten`. \
+Left hand side for the keymap to cycle `bufname`. \
 To prevent this plugin to set a keybinding, set this to `nil`.
 You can set the keybinding as follows:
 ```lua
-vim.keymap.set("n", "<LEADER>tt", require("tabline").toggle_shorten_filepath)
+vim.keymap.set("n", "<LEADER>tt", require("tabline").cycle_bufname)
 ```
 
 #### Highlights

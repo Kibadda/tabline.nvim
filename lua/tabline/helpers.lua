@@ -13,28 +13,30 @@ function M.get_buffers()
       end
 
       if string.find(filepath, "^term:/") == nil then
-        local shorten_filepath = M.shorten_filepath(filepath)
+        local bufname = ""
+        if vim.g.tabline_bufname == "filename" then
+          bufname = vim.fn.expand("#" .. number .. ":t")
+        elseif vim.g.tabline_bufname == "filepath" then
+          bufname = vim.fn.expand("#" .. number)
+        elseif vim.g.tabline_bufname == "short_filepath" then
+          bufname = M.shorten_filepath(vim.fn.expand("#" .. number))
+        end
+
+        local length = string.len(bufname) + string.len(number)
         -- 3: "[" ":" "]"
-        local base_string_length = 3 + string.len(number)
+        length = length + 3
+
         local modified = vim.fn.getbufinfo(number)[1].changed == 1
         if modified then
-          base_string_length = base_string_length + 2
-        end
-        local string_length = base_string_length + string.len(filepath)
-        local shorten_string_length = base_string_length + string.len(shorten_filepath)
-
-        if modified then
-          string_length = string_length + 2
-          shorten_string_length = shorten_string_length + 2
+          -- 2: " +"
+          length = length + 2
         end
 
         local buffer = {
           number = number,
           current = current_buffer == number,
-          filepath = filepath,
-          shorten_filepath = shorten_filepath,
-          string_length = string_length,
-          shorten_string_length = shorten_string_length,
+          bufname = bufname,
+          length = length,
           modified = modified,
         }
         table.insert(buffers, buffer)
@@ -61,33 +63,19 @@ function M.get_buffer_string(buffer, highlights)
     highlight = "%#" .. highlights.other.name .. "#"
   end
 
-  local filepath
-  if buffer.current or not vim.g.tabline_shorten_filepath then
-    filepath = buffer.filepath
-  else
-    filepath = buffer.shorten_filepath
-  end
-
   local modified = ""
   if buffer.modified then
     modified = " +"
   end
 
-  return highlight .. "[" .. buffer.number .. ":" .. filepath .. modified .. "]"
+  return highlight .. "[" .. buffer.number .. ":" .. buffer.bufname .. modified .. "]"
 end
 
 function M.add_buffer_on_left(buffer, highlights, tabline_string_length, tabline_max_length)
-  local string_length
-  if vim.g.tabline_shorten_filepath then
-    string_length = buffer.shorten_string_length
-  else
-    string_length = buffer.string_length
-  end
-
-  if tabline_string_length + string_length < tabline_max_length then
+  if tabline_string_length + buffer.length < tabline_max_length then
     return {
       string = M.get_buffer_string(buffer, highlights) .. "%#" .. highlights.fill.name .. "# ",
-      length = string_length,
+      length = buffer.length,
     }
   else
     -- TODO: handle "<<<"
@@ -99,17 +87,10 @@ function M.add_buffer_on_left(buffer, highlights, tabline_string_length, tabline
 end
 
 function M.add_buffer_on_right(buffer, highlights, tabline_string_length, tabline_max_length)
-  local string_length
-  if vim.g.tabline_shorten_filepath then
-    string_length = buffer.shorten_string_length
-  else
-    string_length = buffer.string_length
-  end
-
-  if tabline_string_length + string_length < tabline_max_length then
+  if tabline_string_length + buffer.length < tabline_max_length then
     return {
       string = "%#" .. highlights.fill.name .. "# " .. M.get_buffer_string(buffer, highlights),
-      length = string_length,
+      length = buffer.length,
     }
   else
     -- TODO: handle ">>>"
