@@ -12,6 +12,8 @@ use {
 }
 ```
 
+![screenshot](/tabline.png?raw=true)
+
 ## Configuration
 
 These are the default options: (which can be overwritten individually)
