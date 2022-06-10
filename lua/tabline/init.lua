@@ -98,7 +98,7 @@ function M.render_tabline()
 end
 
 function M.set_keymap(lhs)
-  vim.keymap.set("n", lhs, M.cycle_bufname, { desc = "[Tabline] toggle shorten" })
+  vim.keymap.set("n", lhs, M.cycle_bufname, { desc = "[Tabline] cycle bufname" })
 end
 
 function M.cycle_bufname()
