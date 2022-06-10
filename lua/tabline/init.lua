@@ -7,7 +7,7 @@ function M.setup(opts)
   opts = vim.tbl_deep_extend("keep", opts, {
     enable = true,
     bufname = "filename", -- "filename", "filepath", "short_filepath"
-    keymap = "<LEADER>tt",
+    keymap = "<Leader>tt",
     highlights = {
       selected = {
         name = "TabLineSel",
@@ -65,7 +65,7 @@ function M.render_tabline()
     local i = math.min(#left, #right)
 
     tabline_string = helpers.get_buffer_string(middle, M.highlights)
-    tabline_string_length = middle.string_length
+    tabline_string_length = middle.length
 
     local rv
     for j = 1, i do
