@@ -16,9 +16,12 @@ function M.get_buffers()
         local shorten_filepath = M.shorten_filepath(filepath)
         -- 3: "[" ":" "]"
         local base_string_length = 3 + string.len(number)
+        local modified = vim.fn.getbufinfo(number)[1].changed == 1
+        if modified then
+          base_string_length = base_string_length + 2
+        end
         local string_length = base_string_length + string.len(filepath)
         local shorten_string_length = base_string_length + string.len(shorten_filepath)
-        local modified = vim.fn.getbufinfo(number)[1].changed == 1
 
         if modified then
           string_length = string_length + 2
