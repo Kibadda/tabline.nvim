@@ -82,12 +82,18 @@ function M.render_tabline()
         rv = helpers.add_buffer_on_left(left[j], M.highlights, tabline_string_length, tabline_max_length)
         tabline_string = rv.string .. tabline_string
         tabline_string_length = tabline_string_length + rv.length
+        if rv.done then
+          break
+        end
       end
     elseif #left < #right then
       for j = i + 1, #right do
         rv = helpers.add_buffer_on_right(right[j], M.highlights, tabline_string_length, tabline_max_length)
         tabline_string = tabline_string .. rv.string
         tabline_string_length = tabline_string_length + rv.length
+        if rv.done then
+          break
+        end
       end
     end
 

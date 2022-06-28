@@ -76,12 +76,13 @@ function M.add_buffer_on_left(buffer, highlights, tabline_string_length, tabline
     return {
       string = M.get_buffer_string(buffer, highlights) .. "%#" .. highlights.fill.name .. "# ",
       length = buffer.length,
+      done = false,
     }
   else
-    -- TODO: handle "<<<"
     return {
-      string = "",
+      string = "%#" .. highlights.fill.name .. "#<<<%=",
       length = 0,
+      done = true,
     }
   end
 end
@@ -91,12 +92,13 @@ function M.add_buffer_on_right(buffer, highlights, tabline_string_length, tablin
     return {
       string = "%#" .. highlights.fill.name .. "# " .. M.get_buffer_string(buffer, highlights),
       length = buffer.length,
+      done = false,
     }
   else
-    -- TODO: handle ">>>"
     return {
-      string = "",
+      string = "%#" .. highlights.fill.name .. "#%=>>>",
       length = 0,
+      done = true,
     }
   end
 end
