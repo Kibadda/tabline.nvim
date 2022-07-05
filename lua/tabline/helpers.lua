@@ -12,8 +12,12 @@ function M.get_buffers()
         filepath = "NO NAME"
       end
 
-      if string.find(filepath, "^term:/") == nil then
-        local bufname = ""
+      local bufname = ""
+      if string.find(filepath, "^term:/") ~= nil then
+        local splitted = vim.split(vim.fn.expand("#" .. number .. ":t"), ":")
+        print(vim.inspect(splitted))
+        bufname = splitted[#splitted]
+      else
         if vim.g.tabline_bufname == "filename" then
           bufname = vim.fn.expand("#" .. number .. ":t")
         elseif vim.g.tabline_bufname == "filepath" then
@@ -21,26 +25,26 @@ function M.get_buffers()
         elseif vim.g.tabline_bufname == "short_filepath" then
           bufname = M.shorten_filepath(vim.fn.expand("#" .. number))
         end
-
-        local length = string.len(bufname) + string.len(number)
-        -- 3: "[" ":" "]"
-        length = length + 3
-
-        local modified = vim.fn.getbufinfo(number)[1].changed == 1
-        if modified then
-          -- 2: " +"
-          length = length + 2
-        end
-
-        local buffer = {
-          number = number,
-          current = current_buffer == number,
-          bufname = bufname,
-          length = length,
-          modified = modified,
-        }
-        table.insert(buffers, buffer)
       end
+
+      local length = string.len(bufname) + string.len(number)
+      -- 3: "[" ":" "]"
+      length = length + 3
+
+      local modified = vim.fn.getbufinfo(number)[1].changed == 1
+      if modified then
+        -- 2: " +"
+        length = length + 2
+      end
+
+      local buffer = {
+        number = number,
+        current = current_buffer == number,
+        bufname = bufname,
+        length = length,
+        modified = modified,
+      }
+      table.insert(buffers, buffer)
     end
   end
 
