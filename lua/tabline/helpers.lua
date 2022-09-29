@@ -15,7 +15,7 @@ function M.get_buffers()
       local bufname = ""
       if string.find(filepath, "^term:/") ~= nil then
         local splitted = vim.split(vim.fn.expand("#" .. number .. ":t"), ":")
-        bufname = splitted[#splitted]
+        bufname = "term://" .. splitted[#splitted]
       else
         if vim.g.tabline_bufname == "filename" then
           bufname = vim.fn.expand("#" .. number .. ":t")
